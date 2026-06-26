@@ -158,6 +158,7 @@ export function Home() {
   const { signOut } = useAuthActions();
   const { client, registerClient, status, setStatus, apiGet, apiPost, isSignedIn, isAuthLoading } = useLocalClient();
   const [activeTab, setActiveTab] = useState("feed");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [data, setData] = useState({ events: [], podcasts: [], resources: [], causes: [] });
   const [listenPodcast, setListenPodcast] = useState(null);
   const [volunteerForm, setVolunteerForm] = useState({ role: "Event Support", availability: "" });
@@ -801,9 +802,18 @@ export function Home() {
               <span>{client?.email || "Sign in to use member features"}</span>
               <button className="btn" type="button" onClick={() => void signOut()}>Sign Out</button>
             </div>
-            {tabs.map(([tab, label]) => (
-              <button className={`tab ${activeTab === tab ? "active" : ""}`} key={tab} onClick={() => setActiveTab(tab)}>{label}</button>
-            ))}
+            <button className="mobileSectionToggle" type="button" aria-expanded={mobileMenuOpen} onClick={() => setMobileMenuOpen((open) => !open)}>
+              <span>Menu</span>
+              <b>{tabs.find(([tab]) => tab === activeTab)?.[1] || "Sections"}</b>
+            </button>
+            <div className={`sectionTabList ${mobileMenuOpen ? "open" : ""}`}>
+              {tabs.map(([tab, label]) => (
+                <button className={`tab ${activeTab === tab ? "active" : ""}`} key={tab} onClick={() => {
+                  setActiveTab(tab);
+                  setMobileMenuOpen(false);
+                }}>{label}</button>
+              ))}
+            </div>
           </aside>
 
           <main className="memberMain">
