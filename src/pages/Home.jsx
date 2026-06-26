@@ -150,16 +150,11 @@ function podcastOptions(podcast) {
   ].filter(([, url]) => url);
 }
 
-function primaryPodcastOption(podcast) {
-  return podcastOptions(podcast)[0];
-}
-
 export function Home() {
   const { signOut } = useAuthActions();
   const { client, registerClient, status, setStatus, apiGet, apiPost, isSignedIn, isAuthLoading } = useLocalClient();
   const [activeTab, setActiveTab] = useState("feed");
   const [data, setData] = useState({ events: [], podcasts: [], resources: [], causes: [] });
-  const [listenPodcast, setListenPodcast] = useState(null);
   const [volunteerForm, setVolunteerForm] = useState({ role: "Event Support", availability: "" });
   const [volunteeredEventIds, setVolunteeredEventIds] = useState(() => new Set());
   const [gymData, setGymData] = useState({ profile: null, matches: [], requests: [], messages: [] });
@@ -474,7 +469,7 @@ export function Home() {
                         {podcastOptions(post.item).map(([label, url]) => (
                           <a className="btn green" href={url} target="_blank" rel="noreferrer" key={label}>{label}</a>
                         ))}
-                        {primaryPodcastOption(post.item) ? <button className="btn" onClick={() => setListenPodcast(post.item)}>More Links</button> : <button className="btn" disabled>Links Coming Soon</button>}
+                        {!podcastOptions(post.item).length ? <button className="btn" disabled>Links Coming Soon</button> : null}
                       </div>
                     </div>
                   </div>
@@ -816,25 +811,6 @@ export function Home() {
           </main>
         </div>
       </section>
-
-      {listenPodcast ? (
-        <div className="modalOverlay" role="dialog" aria-modal="true">
-          <div className="listenModal">
-            <div className="editorHead">
-              <h2>Listen Now</h2>
-              <button className="btn" type="button" onClick={() => setListenPodcast(null)}>Close</button>
-            </div>
-            <p>{listenPodcast.title}</p>
-            <div className="listenOptions">
-              {podcastOptions(listenPodcast).map(([label, url]) => (
-                <a className="btn green" href={url} target="_blank" rel="noreferrer" key={label}>{label}</a>
-              ))}
-              {!podcastOptions(listenPodcast).length ? <p className="notice">No listening links are available yet.</p> : null}
-            </div>
-          </div>
-        </div>
-      ) : null}
-
     </>
   );
 }
