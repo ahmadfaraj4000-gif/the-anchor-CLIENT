@@ -19,6 +19,7 @@ export function useLocalClient() {
   const { isAuthenticated, isLoading } = useConvexAuth();
   const [client, setClient] = useState(null);
   const [status, setStatus] = useState("");
+  const [syncFinished, setSyncFinished] = useState(false);
   const isAuthReady = isAuthenticated && Boolean(token);
 
   useEffect(() => {
@@ -61,7 +62,11 @@ export function useLocalClient() {
   }
 
   useEffect(() => {
-    if (!isAuthReady) return;
+    if (!isAuthReady) {
+      setSyncFinished(false);
+      return;
+    }
+    setSyncFinished(false);
     apiPost("/api/auth/sync", {})
       .then(async ({ user }) => {
         let activeUser = user;
@@ -76,8 +81,13 @@ export function useLocalClient() {
         setCookie("anchorUserEmail", activeUser.email);
         setCookie("anchorUserName", activeUser.name || "Member");
         setClient(activeUser);
+        setStatus("");
       })
-      .catch((error) => setStatus(error.message));
+      .catch((error) => {
+        setClient(null);
+        setStatus(error.message);
+      })
+      .finally(() => setSyncFinished(true));
   }, [isAuthReady, token]);
 
   async function registerClient(profile) {
@@ -85,6 +95,7 @@ export function useLocalClient() {
     setCookie("anchorUserEmail", user.email);
     setCookie("anchorUserName", user.name || "Member");
     setClient(user);
+    setSyncFinished(true);
     setStatus("");
   }
 
@@ -96,6 +107,6 @@ export function useLocalClient() {
     apiGet,
     apiPost,
     isSignedIn: isAuthReady && Boolean(client),
-    isAuthLoading: isLoading || (isAuthenticated && !token) || (isAuthReady && !client && !status)
+    isAuthLoading: isLoading || (isAuthenticated && !token) || (isAuthReady && !syncFinished)
   };
 }
