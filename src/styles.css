@@ -180,6 +180,8 @@ label{font-weight:750;font-size:14px}
 .memberWrap{width:100%;max-width:1440px;margin:0 auto;padding:0 28px;display:grid;grid-template-columns:240px minmax(0,1fr);gap:22px;align-items:start}
 .memberSidebar{position:sticky;top:96px;display:grid;gap:8px}
 .memberSidebar .tab{width:100%;display:flex;justify-content:flex-start;border-radius:14px;text-align:left}
+.mobileSectionToggle{display:none}
+.sectionTabList{display:grid;gap:8px}
 .memberIdentity{border:1px solid var(--line);border-radius:16px;background:#fff;padding:16px;display:grid;gap:4px;box-shadow:0 8px 24px rgba(0,0,0,.035)}
 .memberIdentity b{font-size:17px}
 .memberIdentity span{color:var(--muted);font-size:13px;line-height:1.35;overflow-wrap:anywhere}
@@ -261,7 +263,59 @@ label{font-weight:750;font-size:14px}
   .memberWrap{grid-template-columns:1fr;padding:0 18px}
   .authGatePanel,.authGateForm{grid-template-columns:1fr}
   .authGateIntro h1{font-size:38px}
-  .memberSidebar{position:static}
+  .memberSidebar{
+    position:static;
+    display:grid;
+    gap:8px;
+    padding:10px;
+    margin:-4px 0 8px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:rgba(243,246,244,.96);
+    box-shadow:0 8px 20px rgba(0,0,0,.06);
+  }
+  .memberIdentity{
+    grid-column:1/-1;
+    border-radius:8px;
+    padding:12px;
+    box-shadow:none;
+  }
+  .memberIdentity .btn{
+    min-height:44px;
+    width:100%;
+  }
+  .mobileSectionToggle{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    min-height:48px;
+    width:100%;
+    padding:10px 12px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:#fff;
+    color:var(--dark);
+    font:inherit;
+    font-weight:900;
+    cursor:pointer;
+  }
+  .mobileSectionToggle span{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+  .mobileSectionToggle b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mobileSectionToggle::after{content:"";width:9px;height:9px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px);flex:0 0 auto}
+  .mobileSectionToggle[aria-expanded="true"]::after{transform:rotate(225deg) translateY(-2px)}
+  .sectionTabList{display:none}
+  .sectionTabList.open{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .memberSidebar .tab{
+    min-height:46px;
+    width:100%;
+    justify-content:center;
+    text-align:center;
+    border-radius:8px;
+    padding:10px 8px;
+    font-size:14px;
+    line-height:1.15;
+  }
   .volunteerControls{grid-template-columns:1fr}
   .gymProfileForm,.matchGrid{grid-template-columns:1fr}
   .reportControls,.messageComposer{grid-template-columns:1fr}
@@ -271,4 +325,8 @@ label{font-weight:750;font-size:14px}
   .feedComposer{display:grid}
   .podcastFeedAttachment{grid-template-columns:1fr}
   .listenOptions{grid-template-columns:1fr}
+}
+
+@media(max-width:390px){
+  .sectionTabList.open{grid-template-columns:1fr}
 }
