@@ -182,6 +182,7 @@ label{font-weight:750;font-size:14px}
 .memberSidebar .tab{width:100%;display:flex;justify-content:flex-start;border-radius:14px;text-align:left}
 .mobileSectionToggle{display:none}
 .sectionTabList{display:grid;gap:8px}
+.portalSheetOverlay{display:none}
 .memberIdentity{border:1px solid var(--line);border-radius:16px;background:#fff;padding:16px;display:grid;gap:4px;box-shadow:0 8px 24px rgba(0,0,0,.035)}
 .memberIdentity b{font-size:17px}
 .memberIdentity span{color:var(--muted);font-size:13px;line-height:1.35;overflow-wrap:anywhere}
@@ -260,52 +261,99 @@ label{font-weight:750;font-size:14px}
 .btn:disabled{cursor:not-allowed;color:var(--muted);background:#f4f6f5;transform:none;box-shadow:none}
 
 @media(max-width:850px){
-  .memberWrap{grid-template-columns:1fr;padding:0 18px}
+  .memberDash{padding:14px 0 72px}
+  .memberWrap{grid-template-columns:1fr;padding:0 12px;gap:12px}
   .authGatePanel,.authGateForm{grid-template-columns:1fr}
+  .authGate{padding:18px}
   .authGateIntro h1{font-size:38px}
   .memberSidebar{
     position:static;
-    display:grid;
-    gap:8px;
-    padding:10px;
-    margin:-4px 0 8px;
-    border:1px solid var(--line);
-    border-radius:8px;
-    background:rgba(243,246,244,.96);
-    box-shadow:0 8px 20px rgba(0,0,0,.06);
+    display:block;
+    padding:0;
+    margin:0;
+    border:0;
+    background:transparent;
+    box-shadow:none;
   }
   .memberIdentity{
-    grid-column:1/-1;
+    border:1px solid var(--line);
     border-radius:8px;
     padding:12px;
-    box-shadow:none;
+    box-shadow:0 6px 18px rgba(0,0,0,.04);
   }
   .memberIdentity .btn{
     min-height:44px;
     width:100%;
   }
   .mobileSectionToggle{
+    position:fixed;
+    right:16px;
+    bottom:16px;
+    z-index:30;
     display:flex;
     align-items:center;
     justify-content:space-between;
     gap:12px;
     min-height:48px;
-    width:100%;
+    width:min(240px,calc(100vw - 32px));
     padding:10px 12px;
     border:1px solid var(--line);
-    border-radius:8px;
+    border-radius:999px;
     background:#fff;
     color:var(--dark);
     font:inherit;
     font-weight:900;
     cursor:pointer;
+    box-shadow:0 14px 34px rgba(0,0,0,.18);
   }
   .mobileSectionToggle span{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em}
   .mobileSectionToggle b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .mobileSectionToggle::after{content:"";width:9px;height:9px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px);flex:0 0 auto}
   .mobileSectionToggle[aria-expanded="true"]::after{transform:rotate(225deg) translateY(-2px)}
   .sectionTabList{display:none}
-  .sectionTabList.open{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .portalSheetOverlay{
+    position:fixed;
+    inset:0;
+    z-index:40;
+    display:flex;
+    align-items:flex-end;
+    padding:14px;
+    background:rgba(6,8,7,.44);
+  }
+  .portalBottomSheet{
+    width:100%;
+    max-height:min(78vh,520px);
+    overflow:auto;
+    border:1px solid var(--line);
+    border-radius:18px 18px 10px 10px;
+    background:#fff;
+    box-shadow:0 -18px 44px rgba(0,0,0,.22);
+    padding:10px;
+  }
+  .portalSheetHandle{
+    width:44px;
+    height:5px;
+    border-radius:999px;
+    background:#d7ded9;
+    margin:2px auto 12px;
+  }
+  .portalSheetHead{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:0 2px 10px;
+  }
+  .portalSheetHead div{display:grid;gap:2px;min-width:0}
+  .portalSheetHead span{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em;font-weight:900}
+  .portalSheetHead b{font-size:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .portalSheetHead .btn{min-height:40px;padding:9px 14px}
+  .portalSheetTabs{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+  }
+  .portalSheetTabs .tab,
   .memberSidebar .tab{
     min-height:46px;
     width:100%;
@@ -316,8 +364,22 @@ label{font-weight:750;font-size:14px}
     font-size:14px;
     line-height:1.15;
   }
+  .feedComposer,.feedPost,.memberToolPanel{padding:14px;border-radius:8px}
+  .feedComposer h1,.wideToolPanel h1{font-size:28px;line-height:1.05}
+  .feedComposer .lead{font-size:14px;line-height:1.45}
+  .feedPostHead{display:grid;gap:8px}
+  .feedPostHead h2{font-size:22px;line-height:1.12}
+  .feedPostHead span{white-space:normal}
+  .feedImage{max-height:260px;border-radius:10px}
+  .feedFacts{gap:6px}
+  .feedFacts span{font-size:12px;padding:7px 10px}
+  .feedPost .btn,.calendarEvent .btn,.volunteerEventList .btn,.miniActions .btn,.podcastFeedLinks .btn{width:100%;min-height:44px}
+  .podcastFeedLinks,.miniActions{display:grid;grid-template-columns:1fr;gap:8px}
   .volunteerControls{grid-template-columns:1fr}
   .gymProfileForm,.matchGrid{grid-template-columns:1fr}
+  .gymProfileForm{gap:10px}
+  .choiceGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .choice{min-height:42px;text-align:center}
   .reportControls,.messageComposer{grid-template-columns:1fr}
   .calendarEvent{grid-template-columns:1fr}
   .calendarDate{display:flex;justify-content:flex-start;gap:10px;min-height:auto;padding:12px}
@@ -325,8 +387,11 @@ label{font-weight:750;font-size:14px}
   .feedComposer{display:grid}
   .podcastFeedAttachment{grid-template-columns:1fr}
   .listenOptions{grid-template-columns:1fr}
+  .listenModal{padding:18px;border-radius:14px}
 }
 
 @media(max-width:390px){
-  .sectionTabList.open{grid-template-columns:1fr}
+  .portalSheetTabs{grid-template-columns:1fr}
+  .choiceGrid{grid-template-columns:1fr}
+  .mobileSectionToggle{left:16px;width:auto}
 }
