@@ -7,6 +7,7 @@ import { interests } from "../lib/portalData";
 
 const tabs = [
   ["feed", "News Feed"],
+  ["calendar", "Calendar"],
   ["profile", "Profile"],
   ["volunteer", "Volunteer Now"],
   ["gym", "Find a Gym Partner"],
@@ -160,6 +161,7 @@ export function Home() {
   const [data, setData] = useState({ events: [], podcasts: [], resources: [], causes: [] });
   const [listenPodcast, setListenPodcast] = useState(null);
   const [volunteerForm, setVolunteerForm] = useState({ role: "Event Support", availability: "" });
+  const [volunteeredEventIds, setVolunteeredEventIds] = useState(() => new Set());
   const [gymData, setGymData] = useState({ profile: null, matches: [], requests: [], messages: [] });
   const [gymForm, setGymForm] = useState(emptyGymForm);
   const [gymMessage, setGymMessage] = useState("");
@@ -187,6 +189,16 @@ export function Home() {
     if (!client?.email) return;
     loadGymData();
   }, [client?.email]);
+
+  useEffect(() => {
+    if (!status || /login required/i.test(status)) return undefined;
+    const timeout = window.setTimeout(() => setStatus(""), 3500);
+    return () => window.clearTimeout(timeout);
+  }, [status, setStatus]);
+
+  useEffect(() => {
+    if (isSignedIn && /login required/i.test(status)) setStatus("");
+  }, [isSignedIn, status, setStatus]);
 
   const posts = useMemo(() => {
     const eventPosts = data.events.map((event) => ({
@@ -230,6 +242,22 @@ export function Home() {
     return [...eventPosts, ...podcastPosts, ...resourcePosts, ...causePosts].sort((a, b) => b.sortAt - a.sortAt);
   }, [data]);
 
+  const upcomingEvents = useMemo(() => {
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+    return [...data.events]
+      .filter((event) => (event.startsAt || 0) >= startOfToday.getTime())
+      .sort((a, b) => (a.startsAt || 0) - (b.startsAt || 0));
+  }, [data.events]);
+
+  const calendarGroups = useMemo(() => {
+    return upcomingEvents.reduce((groups, event) => {
+      const month = new Date(event.startsAt).toLocaleString([], { month: "long", year: "numeric" });
+      groups[month] = [...(groups[month] || []), event];
+      return groups;
+    }, {});
+  }, [upcomingEvents]);
+
   async function rsvp(eventId) {
     if (!client?.email) {
       setActiveTab("profile");
@@ -255,16 +283,21 @@ export function Home() {
       return;
     }
     try {
-      await apiPost("/api/volunteer", {
+      const result = await apiPost("/api/volunteer", {
         eventId,
         role: volunteerForm.role,
         availability: volunteerForm.availability
       });
-      setData((current) => ({
-        ...current,
-        events: current.events.map((event) => event._id === eventId ? { ...event, volunteerCount: (event.volunteerCount || 0) + 1 } : event)
-      }));
-      setStatus("You're on the volunteer list for that event.");
+      setVolunteeredEventIds((current) => new Set([...current, eventId]));
+      if (result.created) {
+        setData((current) => ({
+          ...current,
+          events: current.events.map((event) => event._id === eventId ? { ...event, volunteerCount: (event.volunteerCount || 0) + 1 } : event)
+        }));
+        setStatus("You're on the volunteer list for that event.");
+      } else {
+        setStatus("You're already on that volunteer list.");
+      }
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Volunteer signup failed. Sign out and sign back in.");
     }
@@ -481,6 +514,53 @@ export function Home() {
       );
     }
 
+    if (activeTab === "calendar") {
+      return (
+        <section className="memberToolPanel wideToolPanel">
+          <div className="feedPostHead">
+            <div>
+              <p className="eyebrow">Calendar</p>
+              <h1>Upcoming events</h1>
+            </div>
+            <span>{upcomingEvents.length} upcoming</span>
+          </div>
+          <div className="calendarView">
+            {Object.entries(calendarGroups).map(([month, events]) => (
+              <section className="calendarMonth" key={month}>
+                <h2>{month}</h2>
+                <div className="calendarEventList">
+                  {events.map((event) => (
+                    <article className="calendarEvent" key={event._id}>
+                      <div className="calendarDate">
+                        <b>{new Date(event.startsAt).toLocaleString([], { day: "2-digit" })}</b>
+                        <span>{new Date(event.startsAt).toLocaleString([], { weekday: "short" })}</span>
+                      </div>
+                      <div>
+                        <p className="eyebrow">{event.category}</p>
+                        <h3>{event.title}</h3>
+                        <div className="feedFacts">
+                          <span>{formatDate(event)}</span>
+                          <span>{event.location}</span>
+                        </div>
+                        <p>{event.description}</p>
+                        <div className="miniActions">
+                          <button className="btn green" onClick={() => rsvp(event._id)}>RSVP</button>
+                          <button className="btn" disabled={volunteeredEventIds.has(event._id)} onClick={() => volunteer(event._id)}>
+                            {volunteeredEventIds.has(event._id) ? "Volunteer List Joined" : "Volunteer"}
+                          </button>
+                        </div>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            ))}
+            {!upcomingEvents.length ? <p className="notice">No upcoming events are posted yet.</p> : null}
+          </div>
+        </section>
+      );
+    }
+
     if (activeTab === "volunteer") {
       return (
         <section className="memberToolPanel wideToolPanel">
@@ -513,7 +593,9 @@ export function Home() {
                   <span>{event.volunteerCount || 0} volunteer{(event.volunteerCount || 0) === 1 ? "" : "s"}</span>
                 </div>
                 <p>{event.description}</p>
-                <button className="btn green" onClick={() => volunteer(event._id)}>Volunteer for this Event</button>
+                <button className="btn green" disabled={volunteeredEventIds.has(event._id)} onClick={() => volunteer(event._id)}>
+                  {volunteeredEventIds.has(event._id) ? "Volunteer List Joined" : "Volunteer for this Event"}
+                </button>
               </article>
             ))}
             {!data.events.length ? <p className="notice">No events are available for volunteers right now.</p> : null}
