@@ -806,7 +806,7 @@ export function Home() {
               <span>Menu</span>
               <b>{tabs.find(([tab]) => tab === activeTab)?.[1] || "Sections"}</b>
             </button>
-            <div className={`sectionTabList ${mobileMenuOpen ? "open" : ""}`}>
+            <div className="sectionTabList">
               {tabs.map(([tab, label]) => (
                 <button className={`tab ${activeTab === tab ? "active" : ""}`} key={tab} onClick={() => {
                   setActiveTab(tab);
@@ -836,6 +836,29 @@ export function Home() {
                 <a className="btn green" href={url} target="_blank" rel="noreferrer" key={label}>{label}</a>
               ))}
               {!podcastOptions(listenPodcast).length ? <p className="notice">No listening links are available yet.</p> : null}
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {mobileMenuOpen ? (
+        <div className="portalSheetOverlay" role="presentation" onClick={() => setMobileMenuOpen(false)}>
+          <div className="portalBottomSheet" role="dialog" aria-modal="true" aria-label="Member portal sections" onClick={(event) => event.stopPropagation()}>
+            <div className="portalSheetHandle" />
+            <div className="portalSheetHead">
+              <div>
+                <span>Member Menu</span>
+                <b>{tabs.find(([tab]) => tab === activeTab)?.[1] || "Sections"}</b>
+              </div>
+              <button className="btn" type="button" onClick={() => setMobileMenuOpen(false)}>Close</button>
+            </div>
+            <div className="portalSheetTabs">
+              {tabs.map(([tab, label]) => (
+                <button className={`tab ${activeTab === tab ? "active" : ""}`} key={tab} onClick={() => {
+                  setActiveTab(tab);
+                  setMobileMenuOpen(false);
+                }}>{label}</button>
+              ))}
             </div>
           </div>
         </div>
