@@ -37,7 +37,7 @@ export function useLocalClient() {
 
   async function apiPost(path, payload) {
     if (!CONVEX_SITE_URL) throw new Error("The member portal connection is not configured yet.");
-    if (path !== "/api/auth/sync" && path !== "/api/profile" && path !== "/api/public" && !token) {
+    if (path !== "/api/auth/sync" && path !== "/api/profile" && path !== "/api/public" && path !== "/api/account-exists" && !token) {
       throw new Error("Your secure session is still loading. Try again in a second.");
     }
     const response = await fetch(`${CONVEX_SITE_URL}${path}`, {
@@ -95,7 +95,7 @@ export function useLocalClient() {
     setStatus,
     apiGet,
     apiPost,
-    isSignedIn: isAuthReady,
-    isAuthLoading: isLoading || (isAuthenticated && !token)
+    isSignedIn: isAuthReady && Boolean(client),
+    isAuthLoading: isLoading || (isAuthenticated && !token) || (isAuthReady && !client && !status)
   };
 }
