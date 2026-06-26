@@ -304,17 +304,20 @@ label{font-weight:750;font-size:14px}
   .sectionTabList::-webkit-scrollbar{display:none}
   .sectionTabList .tab,
   .memberSidebar .tab{
-    flex:0 0 auto;
-    min-width:92px;
+    flex:0 0 calc((100vw - 52px) / 5);
+    width:calc((100vw - 52px) / 5);
+    min-width:0;
+    max-width:calc((100vw - 52px) / 5);
     height:58px;
     justify-content:center;
     align-items:center;
     text-align:center;
     border-radius:14px;
     padding:8px 10px;
-    font-size:12px;
+    font-size:10px;
     line-height:1.15;
     white-space:normal;
+    overflow:hidden;
   }
   .feedComposer,.feedPost,.memberToolPanel{padding:14px;border-radius:8px}
   .feedComposer h1,.wideToolPanel h1{font-size:28px;line-height:1.05}
@@ -343,6 +346,6 @@ label{font-weight:750;font-size:14px}
 }
 
 @media(max-width:390px){
-  .sectionTabList .tab{min-width:82px;font-size:11px}
+  .sectionTabList .tab{font-size:9px}
   .choiceGrid{grid-template-columns:1fr}
 }
