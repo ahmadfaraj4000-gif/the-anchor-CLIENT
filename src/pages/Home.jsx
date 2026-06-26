@@ -158,7 +158,6 @@ export function Home() {
   const { signOut } = useAuthActions();
   const { client, registerClient, status, setStatus, apiGet, apiPost, isSignedIn, isAuthLoading } = useLocalClient();
   const [activeTab, setActiveTab] = useState("feed");
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [data, setData] = useState({ events: [], podcasts: [], resources: [], causes: [] });
   const [listenPodcast, setListenPodcast] = useState(null);
   const [volunteerForm, setVolunteerForm] = useState({ role: "Event Support", availability: "" });
@@ -802,15 +801,10 @@ export function Home() {
               <span>{client?.email || "Sign in to use member features"}</span>
               <button className="btn" type="button" onClick={() => void signOut()}>Sign Out</button>
             </div>
-            <button className="mobileSectionToggle" type="button" aria-expanded={mobileMenuOpen} onClick={() => setMobileMenuOpen((open) => !open)}>
-              <span>Menu</span>
-              <b>{tabs.find(([tab]) => tab === activeTab)?.[1] || "Sections"}</b>
-            </button>
             <div className="sectionTabList">
               {tabs.map(([tab, label]) => (
                 <button className={`tab ${activeTab === tab ? "active" : ""}`} key={tab} onClick={() => {
                   setActiveTab(tab);
-                  setMobileMenuOpen(false);
                 }}>{label}</button>
               ))}
             </div>
@@ -841,28 +835,6 @@ export function Home() {
         </div>
       ) : null}
 
-      {mobileMenuOpen ? (
-        <div className="portalSheetOverlay" role="presentation" onClick={() => setMobileMenuOpen(false)}>
-          <div className="portalBottomSheet" role="dialog" aria-modal="true" aria-label="Member portal sections" onClick={(event) => event.stopPropagation()}>
-            <div className="portalSheetHandle" />
-            <div className="portalSheetHead">
-              <div>
-                <span>Member Menu</span>
-                <b>{tabs.find(([tab]) => tab === activeTab)?.[1] || "Sections"}</b>
-              </div>
-              <button className="btn" type="button" onClick={() => setMobileMenuOpen(false)}>Close</button>
-            </div>
-            <div className="portalSheetTabs">
-              {tabs.map(([tab, label]) => (
-                <button className={`tab ${activeTab === tab ? "active" : ""}`} key={tab} onClick={() => {
-                  setActiveTab(tab);
-                  setMobileMenuOpen(false);
-                }}>{label}</button>
-              ))}
-            </div>
-          </div>
-        </div>
-      ) : null}
     </>
   );
 }
