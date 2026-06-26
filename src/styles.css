@@ -167,6 +167,7 @@ label{font-weight:750;font-size:14px}
 }
 
 .memberDash{padding:28px 0;background:#f3f6f4}
+.portalNav .brand{cursor:default}
 .authGate{min-height:calc(100vh - 76px);display:grid;place-items:center;padding:32px;background:#f3f6f4}
 .authGatePanel{width:min(1080px,100%);display:grid;grid-template-columns:minmax(280px,.9fr) minmax(320px,1.1fr);gap:24px;align-items:start}
 .authGateIntro{padding:10px 0}
