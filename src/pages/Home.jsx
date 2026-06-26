@@ -29,7 +29,7 @@ const emptyGymForm = {
   active: true
 };
 
-function AuthGate({ status }) {
+function AuthGate({ status, apiPost }) {
   const { signIn } = useAuthActions();
   const [step, setStep] = useState("signIn");
   const [error, setError] = useState("");
@@ -40,9 +40,22 @@ function AuthGate({ status }) {
     const form = event.currentTarget;
     const formData = new FormData(event.currentTarget);
     if (step === "signUp") {
+      const email = form.email.value.trim().toLowerCase();
+      try {
+        const { exists } = await apiPost("/api/account-exists", { email });
+        if (exists) {
+          localStorage.removeItem("anchorPendingProfile");
+          setStep("signIn");
+          setError("That email already has an account. Sign in with that email instead.");
+          return;
+        }
+      } catch {
+        setError("Could not check that email. Try again in a moment.");
+        return;
+      }
       localStorage.setItem("anchorPendingProfile", JSON.stringify({
         name: form.name.value.trim(),
-        email: form.email.value.trim(),
+        email,
         phone: form.phone.value.trim(),
         dateOfBirth: form.dateOfBirth.value,
         interests: form.interests.value,
@@ -56,7 +69,10 @@ function AuthGate({ status }) {
       await signIn("password", formData);
     } catch (authError) {
       if (step === "signUp") localStorage.removeItem("anchorPendingProfile");
-      setError(authError instanceof Error ? authError.message : "Authentication failed.");
+      const message = authError instanceof Error ? authError.message : "";
+      setError(step === "signUp"
+        ? "Account creation failed. If this email already has an account, switch to Sign In."
+        : message || "Authentication failed. Check your email and password.");
     }
   }
 
@@ -376,7 +392,7 @@ export function Home() {
   }
 
   if (!isSignedIn) {
-    return <AuthGate status={status} />;
+    return <AuthGate status={status} apiPost={apiPost} />;
   }
 
   function tabContent() {
